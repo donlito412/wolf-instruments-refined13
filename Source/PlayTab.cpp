@@ -1,9 +1,8 @@
 #include "PlayTab.h"
 
 PlayTab::PlayTab(HowlingWolvesAudioProcessor &p)
-    : audioProcessor(p), presetBrowser(p.getPresetManager()) {
-  // Sidebar
-  addAndMakeVisible(presetBrowser);
+    : audioProcessor(p) { // Removed presetBrowser init
+  // Sidebar removed
 
   // ADSR Section
   setupKnob(attackSlider, "A", attackAttachment, "attack");
@@ -97,8 +96,8 @@ void PlayTab::paint(juce::Graphics &g) {
 void PlayTab::resized() {
   auto area = getLocalBounds();
 
-  // Sidebar (200px)
-  presetBrowser.setBounds(area.removeFromLeft(200));
+  // Sidebar removed (but we keep the spacing so knobs stay in place)
+  area.removeFromLeft(200);
 
   // Main Content
   area.reduce(25, 25); // Padding inside the panel

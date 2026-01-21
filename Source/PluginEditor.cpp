@@ -41,7 +41,12 @@ HowlingWolvesAudioProcessorEditor::HowlingWolvesAudioProcessorEditor(
   addAndMakeVisible(tabs);
 
   // Top bar buttons
-  browseButton.onClick = [this] { tabs.setCurrentTabIndex(0); };
+  browseButton.setButtonText("Select a Preset");
+  browseButton.onClick = [this] {
+    presetBrowser.setVisible(!presetBrowser.isVisible());
+    presetBrowser.toFront(true);
+    resized(); // Force layout update to position the browser
+  };
   addAndMakeVisible(browseButton);
   addAndMakeVisible(saveButton);
   addAndMakeVisible(settingsButton);
@@ -49,7 +54,9 @@ HowlingWolvesAudioProcessorEditor::HowlingWolvesAudioProcessorEditor(
   // Keyboard
   addAndMakeVisible(keyboardComponent);
 
-  // Preset browser overlay removed (moved to PlayTab)
+  // Preset browser overlay
+  addChildComponent(presetBrowser);
+  presetBrowser.setVisible(false);
 }
 
 HowlingWolvesAudioProcessorEditor::~HowlingWolvesAudioProcessorEditor() {
@@ -75,10 +82,16 @@ void HowlingWolvesAudioProcessorEditor::resized() {
   auto topBar = area.removeFromTop(35);
 
   // Top bar buttons (right side)
-  auto buttonArea = topBar.removeFromRight(220).reduced(5);
-  browseButton.setBounds(buttonArea.removeFromLeft(70).reduced(2));
+  auto buttonArea = topBar.removeFromRight(300).reduced(5);
+  browseButton.setBounds(buttonArea.removeFromLeft(150).reduced(2));
   saveButton.setBounds(buttonArea.removeFromLeft(70).reduced(2));
   settingsButton.setBounds(buttonArea.removeFromLeft(70).reduced(2));
+
+  // Browser Overlay Position
+  if (presetBrowser.isVisible()) {
+    presetBrowser.setBounds(browseButton.getX(), browseButton.getBottom() + 5,
+                            220, 350);
+  }
 
   // Keyboard (bottom, 80px, stretches full width)
   auto keyboardArea = area.removeFromBottom(80);

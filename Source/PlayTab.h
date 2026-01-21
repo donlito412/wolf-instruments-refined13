@@ -17,8 +17,7 @@ public:
 private:
   HowlingWolvesAudioProcessor &audioProcessor;
 
-  // Sidebar
-  PresetBrowser presetBrowser;
+  // Sidebar removed (moved to PluginEditor overlay)
 
   // ADSR Section
   juce::Slider attackSlider, decaySlider, sustainSlider, releaseSlider;

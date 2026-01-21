@@ -1,5 +1,7 @@
 #pragma once
 
+#include "FilterProcessor.h"
+#include "LFOProcessor.h"
 #include "PresetManager.h"
 #include "SampleManager.h"
 #include "SynthEngine.h"
@@ -76,6 +78,10 @@ private:
   SampleManager sampleManager;
   juce::MidiKeyboardState keyboardState;
   PresetManager presetManager;
+
+  // Filter and LFO
+  FilterProcessor filterProcessor;
+  LFOProcessor lfoProcessor;
 
   //==============================================================================
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(HowlingWolvesAudioProcessor)

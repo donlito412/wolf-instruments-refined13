@@ -49,6 +49,16 @@ target_sources(HowlingWolves
         Source/VisualizerComponent.h
         Source/CustomKnobLookAndFeel.cpp
         Source/CustomKnobLookAndFeel.h
+        Source/FilterProcessor.cpp
+        Source/FilterProcessor.h
+        Source/LFOProcessor.cpp
+        Source/LFOProcessor.h
+        Source/PremiumKnobLookAndFeel.cpp
+        Source/PremiumKnobLookAndFeel.h
+        Source/VerticalFaderLookAndFeel.cpp
+        Source/VerticalFaderLookAndFeel.h
+        Source/LEDToggleButton.cpp
+        Source/LEDToggleButton.h
 )
 
 # Link against JUCE libraries

@@ -1,8 +1,10 @@
 #pragma once
 
-#include "CustomKnobLookAndFeel.h"
+#include "LEDToggleButton.h"
 #include "PluginProcessor.h"
+#include "PremiumKnobLookAndFeel.h"
 #include "PresetBrowser.h"
+#include "VerticalFaderLookAndFeel.h"
 #include "VisualizerComponent.h"
 #include <JuceHeader.h>
 
@@ -87,7 +89,21 @@ private:
   VisualizerComponent visualizer;
   PresetBrowser presetBrowser;
 
-  CustomKnobLookAndFeel customKnobLookAndFeel;
+  // Filter & LFO Section
+  LEDToggleButton filterLPButton, filterHPButton, filterBPButton,
+      filterNotchButton;
+  juce::Slider filterCutoffSlider, filterResSlider;
+  juce::Label filterCutoffLabel, filterResLabel;
+  std::unique_ptr<SliderAttachment> filterCutoffAttachment, filterResAttachment;
+
+  LEDToggleButton lfoSineButton, lfoSquareButton, lfoTriangleButton;
+  juce::Slider lfoRateSlider, lfoDepthSlider;
+  juce::Label lfoRateLabel, lfoDepthLabel;
+  juce::ComboBox lfoTargetCombo;
+  std::unique_ptr<SliderAttachment> lfoRateAttachment, lfoDepthAttachment;
+
+  PremiumKnobLookAndFeel premiumKnobLookAndFeel;
+  VerticalFaderLookAndFeel verticalFaderLookAndFeel;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(
       HowlingWolvesAudioProcessorEditor)

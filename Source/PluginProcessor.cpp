@@ -147,6 +147,28 @@ HowlingWolvesAudioProcessor::createParameterLayout() {
   layout.add(std::make_unique<juce::AudioParameterFloat>("release", "Release",
                                                          0.01f, 5.0f, 0.1f));
 
+  // Filter parameters
+  layout.add(std::make_unique<juce::AudioParameterChoice>(
+      "filterType", "Filter Type",
+      juce::StringArray{"Low Pass", "High Pass", "Band Pass", "Notch"}, 0));
+  layout.add(std::make_unique<juce::AudioParameterFloat>(
+      "filterCutoff", "Filter Cutoff",
+      juce::NormalisableRange<float>(20.0f, 20000.0f, 1.0f, 0.3f), 1000.0f));
+  layout.add(std::make_unique<juce::AudioParameterFloat>(
+      "filterRes", "Filter Resonance", 0.0f, 1.0f, 0.5f));
+
+  // LFO parameters
+  layout.add(std::make_unique<juce::AudioParameterChoice>(
+      "lfoWave", "LFO Waveform",
+      juce::StringArray{"Sine", "Square", "Triangle"}, 0));
+  layout.add(std::make_unique<juce::AudioParameterFloat>("lfoRate", "LFO Rate",
+                                                         0.01f, 20.0f, 1.0f));
+  layout.add(std::make_unique<juce::AudioParameterChoice>(
+      "lfoTarget", "LFO Target",
+      juce::StringArray{"Filter Cutoff", "Volume", "Pan", "Pitch"}, 0));
+  layout.add(std::make_unique<juce::AudioParameterFloat>(
+      "lfoDepth", "LFO Depth", 0.0f, 1.0f, 0.5f));
+
   return layout;
 }
 

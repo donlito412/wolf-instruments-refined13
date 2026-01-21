@@ -290,7 +290,7 @@ HowlingWolvesAudioProcessorEditor::HowlingWolvesAudioProcessorEditor(
     addAndMakeVisible(slider);
     slider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
     slider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
-    slider.setLookAndFeel(&customKnobLookAndFeel);
+    slider.setLookAndFeel(&premiumKnobLookAndFeel);
 
     addAndMakeVisible(label);
     label.setText(name, juce::dontSendNotification);
@@ -349,6 +349,69 @@ HowlingWolvesAudioProcessorEditor::HowlingWolvesAudioProcessorEditor(
   };
   addChildComponent(presetBrowser);
   presetBrowser.setVisible(false); // Hidden by default
+
+  // Filter & LFO Section
+  // Filter mode buttons
+  filterLPButton.setButtonText("LP");
+  filterHPButton.setButtonText("HP");
+  filterBPButton.setButtonText("BP");
+  filterNotchButton.setButtonText("NOTCH");
+
+  addAndMakeVisible(filterLPButton);
+  addAndMakeVisible(filterHPButton);
+  addAndMakeVisible(filterBPButton);
+  addAndMakeVisible(filterNotchButton);
+
+  filterLPButton.setToggleState(true, juce::dontSendNotification);
+
+  // Filter sliders
+  filterCutoffSlider.setSliderStyle(juce::Slider::LinearVertical);
+  filterCutoffSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
+  filterCutoffSlider.setLookAndFeel(&verticalFaderLookAndFeel);
+  addAndMakeVisible(filterCutoffSlider);
+  filterCutoffAttachment = std::make_unique<SliderAttachment>(
+      audioProcessor.getAPVTS(), "filterCutoff", filterCutoffSlider);
+
+  filterResSlider.setSliderStyle(juce::Slider::LinearVertical);
+  filterResSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
+  filterResSlider.setLookAndFeel(&verticalFaderLookAndFeel);
+  addAndMakeVisible(filterResSlider);
+  filterResAttachment = std::make_unique<SliderAttachment>(
+      audioProcessor.getAPVTS(), "filterRes", filterResSlider);
+
+  // LFO waveform buttons
+  lfoSineButton.setButtonText("~");
+  lfoSquareButton.setButtonText("▯");
+  lfoTriangleButton.setButtonText("△");
+
+  addAndMakeVisible(lfoSineButton);
+  addAndMakeVisible(lfoSquareButton);
+  addAndMakeVisible(lfoTriangleButton);
+
+  lfoSineButton.setToggleState(true, juce::dontSendNotification);
+
+  // LFO sliders
+  lfoRateSlider.setSliderStyle(juce::Slider::LinearVertical);
+  lfoRateSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
+  lfoRateSlider.setLookAndFeel(&verticalFaderLookAndFeel);
+  addAndMakeVisible(lfoRateSlider);
+  lfoRateAttachment = std::make_unique<SliderAttachment>(
+      audioProcessor.getAPVTS(), "lfoRate", lfoRateSlider);
+
+  lfoDepthSlider.setSliderStyle(juce::Slider::LinearVertical);
+  lfoDepthSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
+  lfoDepthSlider.setLookAndFeel(&verticalFaderLookAndFeel);
+  addAndMakeVisible(lfoDepthSlider);
+  lfoDepthAttachment = std::make_unique<SliderAttachment>(
+      audioProcessor.getAPVTS(), "lfoDepth", lfoDepthSlider);
+
+  // LFO target dropdown
+  lfoTargetCombo.addItem("Filter Cutoff", 1);
+  lfoTargetCombo.addItem("Volume", 2);
+  lfoTargetCombo.addItem("Pan", 3);
+  lfoTargetCombo.addItem("Pitch", 4);
+  lfoTargetCombo.setSelectedId(1);
+  addAndMakeVisible(lfoTargetCombo);
 }
 
 HowlingWolvesAudioProcessorEditor::~HowlingWolvesAudioProcessorEditor() {
@@ -547,6 +610,87 @@ void HowlingWolvesAudioProcessorEditor::resized() {
   gainSlider.setBounds(outputPanel.getCentreX() - knobSize / 2,
                        outputPanel.getCentreY() - knobSize / 2, knobSize,
                        knobSize);
+
+  // Filter & LFO Panel (Bottom Left, next to Output)
+  auto filterLFOPanel = mainArea.withY(mainArea.getY() + topRowH + gap)
+                            .withX(mainArea.getX())
+                            .withWidth(panelW)
+                            .withHeight(bottomRowH)
+                            .reduced(15); // More padding
+
+  // Split into Filter (top) and LFO (bottom) with gap
+  auto filterSection =
+      filterLFOPanel.removeFromTop((filterLFOPanel.getHeight() - 15) * 0.5f);
+  filterLFOPanel.removeFromTop(15); // Gap between sections
+  auto lfoSection = filterLFOPanel;
+
+  // === FILTER SECTION ===
+  filterSection.removeFromTop(30); // Space for panel title
+
+  // Filter mode buttons (centered row of 4) - SMALLER
+  auto filterButtonRow = filterSection.removeFromTop(22);
+  int totalButtonWidth = filterButtonRow.getWidth() - 40; // Margins
+  int buttonWidth = (totalButtonWidth - 15) / 4;          // 3 gaps of 5px
+  int buttonStartX = filterButtonRow.getX() + 20;         // Center offset
+
+  filterLPButton.setBounds(buttonStartX, filterButtonRow.getY(), buttonWidth,
+                           22);
+  filterHPButton.setBounds(buttonStartX + buttonWidth + 5,
+                           filterButtonRow.getY(), buttonWidth, 22);
+  filterBPButton.setBounds(buttonStartX + (buttonWidth + 5) * 2,
+                           filterButtonRow.getY(), buttonWidth, 22);
+  filterNotchButton.setBounds(buttonStartX + (buttonWidth + 5) * 3,
+                              filterButtonRow.getY(), buttonWidth, 22);
+
+  filterSection.removeFromTop(12); // Gap
+
+  // Filter faders (centered, side by side) - SMALLER
+  auto filterFaderArea = filterSection;
+  int faderWidth = 28;
+  int faderHeight = juce::jmin(90, filterFaderArea.getHeight());
+  int totalFaderWidth = faderWidth * 2 + 25; // 25px gap between
+  int faderStartX = filterFaderArea.getCentreX() - totalFaderWidth / 2;
+
+  filterCutoffSlider.setBounds(faderStartX, filterFaderArea.getY(), faderWidth,
+                               faderHeight);
+  filterResSlider.setBounds(faderStartX + faderWidth + 25,
+                            filterFaderArea.getY(), faderWidth, faderHeight);
+
+  // === LFO SECTION ===
+  lfoSection.removeFromTop(30); // Space for panel title
+
+  // LFO waveform buttons (centered row of 3) - SMALLER
+  auto lfoButtonRow = lfoSection.removeFromTop(22);
+  int lfoTotalButtonWidth = lfoButtonRow.getWidth() - 60; // More margins
+  int lfoButtonWidth = (lfoTotalButtonWidth - 10) / 3;    // 2 gaps of 5px
+  int lfoButtonStartX =
+      lfoButtonRow.getCentreX() - (lfoButtonWidth * 3 + 10) / 2;
+
+  lfoSineButton.setBounds(lfoButtonStartX, lfoButtonRow.getY(), lfoButtonWidth,
+                          22);
+  lfoSquareButton.setBounds(lfoButtonStartX + lfoButtonWidth + 5,
+                            lfoButtonRow.getY(), lfoButtonWidth, 22);
+  lfoTriangleButton.setBounds(lfoButtonStartX + (lfoButtonWidth + 5) * 2,
+                              lfoButtonRow.getY(), lfoButtonWidth, 22);
+
+  lfoSection.removeFromTop(10); // Gap
+
+  // LFO target dropdown (centered, reasonable width) - SMALLER
+  auto lfoTargetArea = lfoSection.removeFromTop(20);
+  int dropdownWidth = juce::jmin(160, lfoTargetArea.getWidth() - 40);
+  lfoTargetCombo.setBounds(lfoTargetArea.getCentreX() - dropdownWidth / 2,
+                           lfoTargetArea.getY(), dropdownWidth, 20);
+
+  lfoSection.removeFromTop(10); // Gap
+
+  // LFO faders (centered, side by side) - SMALLER
+  int lfoFaderHeight = juce::jmin(70, lfoSection.getHeight());
+  int lfoFaderStartX = lfoSection.getCentreX() - totalFaderWidth / 2;
+
+  lfoRateSlider.setBounds(lfoFaderStartX, lfoSection.getY(), faderWidth,
+                          lfoFaderHeight);
+  lfoDepthSlider.setBounds(lfoFaderStartX + faderWidth + 25, lfoSection.getY(),
+                           faderWidth, lfoFaderHeight);
 
   // Overlay: Preset Browser (Full Area minus Top Bar)
   auto browserArea = getLocalBounds();

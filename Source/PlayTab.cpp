@@ -3,9 +3,20 @@
 PlayTab::PlayTab(HowlingWolvesAudioProcessor &p) : audioProcessor(p) {
   // ADSR Section
   setupKnob(attackSlider, "Attack", attackAttachment, "attack");
+  attackSlider.setTooltip(
+      "Adjusts the time it takes for the sound to reach full volume.");
+
   setupKnob(decaySlider, "Decay", decayAttachment, "decay");
+  decaySlider.setTooltip(
+      "Adjusts the time it takes to drop to the sustain level.");
+
   setupKnob(sustainSlider, "Sustain", sustainAttachment, "sustain");
+  sustainSlider.setTooltip(
+      "Sets the volume level held while the key is pressed.");
+
   setupKnob(releaseSlider, "Release", releaseAttachment, "release");
+  releaseSlider.setTooltip(
+      "Adjusts the time it takes for the sound to fade out after release.");
 
   // Init ADSR Labels
   auto initLabel = [this](juce::Label &l, const juce::String &text) {
@@ -29,7 +40,10 @@ PlayTab::PlayTab(HowlingWolvesAudioProcessor &p) : audioProcessor(p) {
   // Sample Section
   // Use setupSlider to connect params
   setupSlider(startSlider, "Start", startAttachment, "sampleStart");
+  startSlider.setTooltip("Sets the start position of the sample playback.");
+
   setupSlider(endSlider, "End", endAttachment, "sampleEnd");
+  endSlider.setTooltip("Sets the end position of the sample playback.");
 
   initLabel(startLabel, "Start");
   initLabel(endLabel, "End");
@@ -38,6 +52,7 @@ PlayTab::PlayTab(HowlingWolvesAudioProcessor &p) : audioProcessor(p) {
 
   addAndMakeVisible(loopToggle);
   loopToggle.setButtonText("Loop");
+  loopToggle.setTooltip("Enables or disables sample looping.");
   if (audioProcessor.getAPVTS().getParameter("sampleLoop") != nullptr) {
     loopAttachment =
         std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
@@ -59,8 +74,13 @@ PlayTab::PlayTab(HowlingWolvesAudioProcessor &p) : audioProcessor(p) {
   tuneLabel.setJustificationType(juce::Justification::centredRight);
 
   setupSlider(gainSlider, "Gain", gainAttachment, "gain");
+  gainSlider.setTooltip("Adjusts the output volume.");
+
   setupSlider(panSlider, "Pan", panAttachment, "pan");
+  panSlider.setTooltip("Adjusts the stereo balance.");
+
   setupSlider(tuneSlider, "Tune", tuneAttachment, "tune");
+  tuneSlider.setTooltip("Adjusts the pitch in semitones.");
 
   addAndMakeVisible(outputLabel);
   outputLabel.setText("OUTPUT", juce::dontSendNotification);

@@ -19,6 +19,7 @@ SettingsTab::SettingsTab(HowlingWolvesAudioProcessor &p) : audioProcessor(p) {
     midiChannelBox.addItem(juce::String(i), i + 1);
   midiChannelBox.setSelectedId(1); // Default to Omni
   midiChannelBox.setJustificationType(juce::Justification::centred);
+  midiChannelBox.setTooltip("Selects the MIDI input channel.");
 
   // --- UI Section ---
   addAndMakeVisible(uiLabel);
@@ -36,6 +37,7 @@ SettingsTab::SettingsTab(HowlingWolvesAudioProcessor &p) : audioProcessor(p) {
   scaleBox.addItem("150%", 3);
   scaleBox.setSelectedId(1); // Default 100%
   scaleBox.setJustificationType(juce::Justification::centred);
+  scaleBox.setTooltip("Adjusts the plugin window size.");
   scaleBox.onChange = [this] {
     if (auto *editor =
             findParentComponentOfClass<juce::AudioProcessorEditor>()) {
@@ -67,6 +69,7 @@ SettingsTab::SettingsTab(HowlingWolvesAudioProcessor &p) : audioProcessor(p) {
 
   addAndMakeVisible(panicButton);
   panicButton.setButtonText("PANIC / ALL OFF");
+  panicButton.setTooltip("Stops all playing notes immediately.");
   panicButton.setColour(juce::TextButton::buttonColourId,
                         juce::Colour(0xff4a0000));
   panicButton.onClick = [] {

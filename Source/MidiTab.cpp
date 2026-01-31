@@ -8,6 +8,7 @@ MidiTab::MidiTab(HowlingWolvesAudioProcessor &p) : audioProcessor(p) {
   arpLabel.setColour(juce::Label::textColourId, WolfColors::ACCENT_CYAN);
 
   addAndMakeVisible(arpEnableToggle);
+  arpEnableToggle.setTooltip("Enables the arpeggiator.");
   arpEnableAtt =
       std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
           audioProcessor.getAPVTS(), "arpEnabled", arpEnableToggle);
@@ -15,6 +16,7 @@ MidiTab::MidiTab(HowlingWolvesAudioProcessor &p) : audioProcessor(p) {
   addAndMakeVisible(rateLabel);
   addAndMakeVisible(rateCombo);
   rateCombo.addItemList({"1/4", "1/8", "1/16", "1/32"}, 1);
+  rateCombo.setTooltip("Sets the arpeggiator speed.");
   rateAtt =
       std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
           audioProcessor.getAPVTS(), "arpRate", rateCombo);
@@ -22,6 +24,7 @@ MidiTab::MidiTab(HowlingWolvesAudioProcessor &p) : audioProcessor(p) {
   addAndMakeVisible(modeLabel);
   addAndMakeVisible(modeCombo);
   modeCombo.addItemList({"Up", "Down", "Up/Down", "Random"}, 1);
+  modeCombo.setTooltip("Sets the arpeggiator pattern.");
   modeAtt =
       std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
           audioProcessor.getAPVTS(), "arpMode", modeCombo);
@@ -30,6 +33,7 @@ MidiTab::MidiTab(HowlingWolvesAudioProcessor &p) : audioProcessor(p) {
   addAndMakeVisible(octSlider);
   octSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
   octSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+  octSlider.setTooltip("Sets the number of Octaves.");
   octAtt =
       std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
           audioProcessor.getAPVTS(), "arpOctave", octSlider);
@@ -38,6 +42,7 @@ MidiTab::MidiTab(HowlingWolvesAudioProcessor &p) : audioProcessor(p) {
   addAndMakeVisible(gateSlider);
   gateSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
   gateSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+  gateSlider.setTooltip("Sets the note length.");
   gateAtt =
       std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
           audioProcessor.getAPVTS(), "arpGate", gateSlider);
@@ -50,6 +55,7 @@ MidiTab::MidiTab(HowlingWolvesAudioProcessor &p) : audioProcessor(p) {
   addAndMakeVisible(typeLabel);
   addAndMakeVisible(typeCombo);
   typeCombo.addItemList({"Off", "Major", "Minor", "7th", "9th"}, 1);
+  typeCombo.setTooltip("Automatically generates chords from single notes.");
   typeAtt =
       std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
           audioProcessor.getAPVTS(), "chordMode", typeCombo);

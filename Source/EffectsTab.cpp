@@ -9,7 +9,10 @@ EffectsTab::EffectsTab(HowlingWolvesAudioProcessor &p) : audioProcessor(p) {
   distLabel.setColour(juce::Label::textColourId, WolfColors::ACCENT_CYAN);
 
   setupKnob(distDriveSlider, "Drive", distDriveAttachment, "distDrive");
+  distDriveSlider.setTooltip("Sets the amount of distortion drive.");
+
   setupKnob(distMixSlider, "Mix", distMixAttachment, "distMix");
+  distMixSlider.setTooltip("Blends the distorted signal.");
 
   // --- Delay ---
   addAndMakeVisible(delayLabel);
@@ -18,9 +21,14 @@ EffectsTab::EffectsTab(HowlingWolvesAudioProcessor &p) : audioProcessor(p) {
   delayLabel.setColour(juce::Label::textColourId, WolfColors::ACCENT_CYAN);
 
   setupKnob(delayTimeSlider, "Time", delayTimeAttachment, "delayTime");
+  delayTimeSlider.setTooltip("Sets the delay time in milliseconds.");
+
   setupKnob(delayFeedbackSlider, "Fdbk", delayFeedbackAttachment,
             "delayFeedback");
+  delayFeedbackSlider.setTooltip("Sets the number of delay repeats.");
+
   setupKnob(delayMixSlider, "Mix", delayMixAttachment, "delayMix");
+  delayMixSlider.setTooltip("Blends the delayed signal.");
 
   // --- Reverb ---
   addAndMakeVisible(reverbLabel);
@@ -29,9 +37,14 @@ EffectsTab::EffectsTab(HowlingWolvesAudioProcessor &p) : audioProcessor(p) {
   reverbLabel.setColour(juce::Label::textColourId, WolfColors::ACCENT_CYAN);
 
   setupKnob(reverbSizeSlider, "Size", reverbSizeAttachment, "reverbSize");
+  reverbSizeSlider.setTooltip("Sets the size of the simulated room.");
+
   setupKnob(reverbDampingSlider, "Damp", reverbDampingAttachment,
             "reverbDamping");
+  reverbDampingSlider.setTooltip("Absorbs high frequencies in the reverb.");
+
   setupKnob(reverbMixSlider, "Mix", reverbMixAttachment, "REVERB_MIX");
+  reverbMixSlider.setTooltip("Blends the reverb signal.");
 
   // --- Bite ---
   addAndMakeVisible(biteLabel);
@@ -40,6 +53,8 @@ EffectsTab::EffectsTab(HowlingWolvesAudioProcessor &p) : audioProcessor(p) {
   biteLabel.setColour(juce::Label::textColourId, WolfColors::ACCENT_CYAN);
 
   setupKnob(biteSlider, "Bite", biteAttachment, "BITE");
+  biteSlider.setTooltip(
+      "Adds aggressive bit-crushing and sample rate reduction.");
 
   // --- Hunt ---
   addAndMakeVisible(huntLabel);
@@ -51,12 +66,14 @@ EffectsTab::EffectsTab(HowlingWolvesAudioProcessor &p) : audioProcessor(p) {
   addAndMakeVisible(huntModeBox);
   huntModeBox.addItemList(juce::StringArray{"Stalk", "Chase", "Kill"}, 1);
   huntModeBox.setJustificationType(juce::Justification::centred);
+  huntModeBox.setTooltip("Selects the Hunt Mode behavior.");
   huntModeAttachment =
       std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
           audioProcessor.getAPVTS(), "HUNT_MODE", huntModeBox);
 
   addAndMakeVisible(huntButton);
   huntButton.setButtonText("HUNT");
+  huntButton.setTooltip("Triggers the Hunt Mode effect.");
   huntButton.setColour(juce::TextButton::buttonColourId,
                        WolfColors::ACCENT_RED);
   huntButton.setColour(juce::TextButton::textColourOffId, juce::Colours::white);
@@ -83,6 +100,7 @@ EffectsTab::EffectsTab(HowlingWolvesAudioProcessor &p) : audioProcessor(p) {
   chainBox.addItemList(
       juce::StringArray{"Standard", "Ethereal", "Chaos", "Reverse"}, 1);
   chainBox.setJustificationType(juce::Justification::centred);
+  chainBox.setTooltip("Reorders the effects chain.");
   chainAttachment =
       std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
           audioProcessor.getAPVTS(), "CHAIN_ORDER", chainBox);

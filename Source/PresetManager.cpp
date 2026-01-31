@@ -27,12 +27,26 @@ PresetManager::PresetManager(juce::AudioProcessorValueTreeState &apvts,
 // We no longer enforce category subfolders.
 // User can organize files as they wish.
 
-void PresetManager::savePreset(const juce::String &presetName,
-                               const juce::String &category) {
-  // Saving WAV presets is not yet supported via this interface.
-  // We could implement saving current settings + sound reference to XML if
-  // needed in future.
-  DBG("Saving presets not supported in WAV mode yet.");
+void PresetManager::savePreset(const juce::String &presetName) {
+  if (presetName.isEmpty())
+    return;
+
+  auto file = defaultDirectory.getChildFile(presetName + ".xml");
+  if (!defaultDirectory.exists())
+    defaultDirectory.createDirectory();
+
+  auto state = valueTreeState.copyState();
+  std::unique_ptr<juce::XmlElement> xml(state.createXml());
+
+  // Add sample path
+  auto samplePath = sampleManager.getCurrentSamplePath();
+  if (samplePath.isNotEmpty()) {
+    xml->setAttribute("SamplePath", samplePath);
+  }
+
+  xml->writeTo(file);
+  currentPresetName = presetName;
+  DBG("Saved preset: " + file.getFullPathName());
 }
 
 void PresetManager::deletePreset(const juce::String &presetName) {
@@ -73,8 +87,30 @@ void PresetManager::loadPreset(const juce::String &presetName) {
     return;
   }
 
-  // Load WAV via SampleManager
-  sampleManager.loadSound(presetFile);
+  // Check if it's an XML (Full Preset) or WAV (Sample only)
+  if (presetFile.getFileExtension().equalsIgnoreCase(".xml")) {
+    auto xml = juce::parseXML(presetFile);
+    if (xml != nullptr) {
+      // 1. Load APVTS State
+      valueTreeState.replaceState(juce::ValueTree::fromXml(*xml));
+
+      // 2. Load Sample if present
+      auto samplePath = xml->getStringAttribute("SamplePath");
+      if (samplePath.isNotEmpty()) {
+        juce::File sampleFile(samplePath);
+        if (sampleFile.existsAsFile()) {
+          sampleManager.loadSound(sampleFile);
+        } else {
+          // Try to find relative to preset? Or just log warning
+          DBG("Sample file not found: " + samplePath);
+        }
+      }
+    }
+  } else {
+    // Legacy/Simple Mode: Just load the sample
+    sampleManager.loadSound(presetFile);
+  }
+
   currentPresetName = presetName;
 }
 
@@ -88,8 +124,9 @@ juce::File PresetManager::getPresetFile(const juce::String &presetName) const {
     auto allFiles = root.findChildFiles(options, true, "*");
     for (const auto &f : allFiles) {
       if (f.getFileNameWithoutExtension() == presetName) {
-        // Check extension case-insensitive
-        if (f.getFileExtension().equalsIgnoreCase(presetExtension))
+        // Check extension (support both .xml and .wav)
+        if (f.getFileExtension().equalsIgnoreCase(".xml") ||
+            f.getFileExtension().equalsIgnoreCase(presetExtension))
           return f;
       }
     }
@@ -167,7 +204,8 @@ juce::Array<juce::File> PresetManager::getAllPresets() const {
     auto allFiles = root.findChildFiles(options, true, "*"); // Scan everything
 
     for (const auto &file : allFiles) {
-      if (file.getFileExtension().equalsIgnoreCase(presetExtension)) {
+      if (file.getFileExtension().equalsIgnoreCase(presetExtension) ||
+          file.getFileExtension().equalsIgnoreCase(".xml")) {
         DBG("Found preset: " + file.getFullPathName());
         presets.add(file);
       }

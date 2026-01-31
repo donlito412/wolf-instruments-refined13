@@ -18,7 +18,10 @@ ModulateTab::ModulateTab(HowlingWolvesAudioProcessor &p) : audioProcessor(p) {
 
   // Only setup attachments if parameters exist
   setupKnob(cutoffSlider, "Cutoff", cutoffAttachment, "filterCutoff", true);
+  cutoffSlider.setTooltip("Sets the filter cutoff frequency.");
+
   setupKnob(resSlider, "Res", resAttachment, "filterRes");
+  resSlider.setTooltip("Sets the filter resonance (Q factor).");
 
   addAndMakeVisible(filterTypeBox);
   filterTypeBox.addItem("Low Pass", 1);
@@ -26,6 +29,7 @@ ModulateTab::ModulateTab(HowlingWolvesAudioProcessor &p) : audioProcessor(p) {
   filterTypeBox.addItem("Band Pass", 3);
   filterTypeBox.addItem("Notch", 4);
   filterTypeBox.setJustificationType(juce::Justification::centred);
+  filterTypeBox.setTooltip("Selects the filter type.");
 
   if (audioProcessor.getAPVTS().getParameter("filterType") != nullptr) {
     filterTypeAttachment = std::make_unique<
@@ -40,13 +44,17 @@ ModulateTab::ModulateTab(HowlingWolvesAudioProcessor &p) : audioProcessor(p) {
   lfoLabel.setColour(juce::Label::textColourId, WolfColors::ACCENT_CYAN);
 
   setupKnob(lfoRateSlider, "Rate", lfoRateAttachment, "lfoRate");
+  lfoRateSlider.setTooltip("Sets the LFO speed in Hz.");
+
   setupKnob(lfoDepthSlider, "Depth", lfoDepthAttachment, "lfoDepth");
+  lfoDepthSlider.setTooltip("Sets the amount of LFO modulation.");
 
   addAndMakeVisible(lfoWaveBox);
   lfoWaveBox.addItem("Sine", 1);
   lfoWaveBox.addItem("Square", 2);
   lfoWaveBox.addItem("Triangle", 3);
   lfoWaveBox.setJustificationType(juce::Justification::centred);
+  lfoWaveBox.setTooltip("Selects the LFO waveform.");
 
   if (audioProcessor.getAPVTS().getParameter("lfoWave") != nullptr) {
     lfoWaveAttachment = std::make_unique<
@@ -60,6 +68,7 @@ ModulateTab::ModulateTab(HowlingWolvesAudioProcessor &p) : audioProcessor(p) {
   lfoTargetBox.addItem("Pan", 3);
   lfoTargetBox.addItem("Pitch", 4);
   lfoTargetBox.setJustificationType(juce::Justification::centred);
+  lfoTargetBox.setTooltip("Selects the parameter modulated by the LFO.");
 
   if (audioProcessor.getAPVTS().getParameter("lfoTarget") != nullptr) {
     lfoTargetAttachment = std::make_unique<

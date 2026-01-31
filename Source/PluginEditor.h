@@ -38,6 +38,9 @@ private:
   // Keyboard (always visible at bottom)
   juce::MidiKeyboardComponent keyboardComponent;
 
+  // Tooltips
+  std::unique_ptr<juce::TooltipWindow> tooltipWindow;
+
   // Cave background
   juce::Image backgroundImage;
   juce::Image logoImage;
@@ -45,7 +48,12 @@ private:
   // Top bar buttons
   juce::TextButton browseButton{"BROWSE"};
   juce::TextButton saveButton{"SAVE"};
-  juce::TextButton settingsButton{"?"};
+  juce::TextButton settingsButton{"SETTINGS"}; // Now says SETTINGS
+  juce::TextButton tipsButton{"TIPS"};         // New Tips Toggle
+
+  // Settings Overlay
+  SettingsTab settingsTab; // Reusing the SettingsTab as a component
+  bool showSettings = false;
 
   // Preset browser overlay
   PresetBrowser presetBrowser;

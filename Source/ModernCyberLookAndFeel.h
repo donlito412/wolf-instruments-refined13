@@ -57,4 +57,12 @@ public:
   void drawRotarySlider(juce::Graphics &g, int x, int y, int width, int height,
                         float sliderPos, float rotaryStartAngle,
                         float rotaryEndAngle, juce::Slider &slider) override;
+
+  // Tooltip styling
+  juce::Rectangle<int>
+  getTooltipBounds(const juce::String &tipText, juce::Point<int> screenPos,
+                   juce::Rectangle<int> parentArea) override;
+
+  void drawTooltip(juce::Graphics &g, const juce::String &text, int width,
+                   int height) override;
 };

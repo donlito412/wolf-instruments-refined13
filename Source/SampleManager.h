@@ -16,7 +16,10 @@ public:
   void loadSound(const juce::File &file);
   void loadDrumKit(const juce::File &kitDirectory);
 
+  juce::String getCurrentSamplePath() const;
+
 private:
   SynthEngine &synthEngine;
   juce::AudioFormatManager formatManager;
+  juce::String currentSamplePath;
 };

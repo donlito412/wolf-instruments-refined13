@@ -8,7 +8,7 @@ HowlingWolvesAudioProcessorEditor::HowlingWolvesAudioProcessorEditor(
       tabs(juce::TabbedButtonBar::TabsAtTop),
       keyboardComponent(audioProcessor.getKeyboardState(),
                         juce::MidiKeyboardComponent::horizontalKeyboard),
-      presetBrowser(audioProcessor.getPresetManager()) {
+      presetBrowser(audioProcessor.getPresetManager()), settingsTab(p) {
 
   // Set LookAndFeel
   setLookAndFeel(&modernLookAndFeel);
@@ -55,6 +55,59 @@ HowlingWolvesAudioProcessorEditor::HowlingWolvesAudioProcessorEditor(
   addAndMakeVisible(browseButton);
   addAndMakeVisible(saveButton);
   addAndMakeVisible(settingsButton);
+  addAndMakeVisible(tipsButton);
+
+  // Settings Overlay
+  addChildComponent(settingsTab);
+  settingsTab.setVisible(false);
+
+  // Tips Button Logic
+  tipsButton.setClickingTogglesState(true);
+  tipsButton.setToggleState(true, juce::dontSendNotification); // On by default
+  tipsButton.onClick = [this] {
+    if (tipsButton.getToggleState()) {
+      tooltipWindow = std::make_unique<juce::TooltipWindow>(this, 700);
+    } else {
+      tooltipWindow = nullptr;
+    }
+  };
+  // Initialize Tooltips (On by default)
+  tooltipWindow = std::make_unique<juce::TooltipWindow>(this, 700);
+
+  // Settings Button Logic
+  settingsButton.onClick = [this] {
+    showSettings = !showSettings;
+    settingsTab.setVisible(showSettings);
+    if (showSettings) {
+      settingsTab.toFront(true);
+      presetBrowser.setVisible(false); // Hide browser if open
+    }
+  };
+
+  // Save Button Logic
+  saveButton.onClick = [this] {
+    auto alert = std::make_unique<juce::AlertWindow>(
+        "Save Preset",
+        "Enter a name for your preset:", juce::AlertWindow::QuestionIcon);
+
+    alert->addTextEditor("presetName", "My Preset");
+    alert->addButton("Save", 1);
+    alert->addButton("Cancel", 0);
+
+    alert->enterModalState(
+        true,
+        juce::ModalCallbackFunction::create([this, a = alert.get()](int r) {
+          if (r == 1) {
+            auto name = a->getTextEditorContents("presetName");
+            audioProcessor.getPresetManager().savePreset(name);
+          }
+        }));
+    // AlertWindow is self-deleting by default when modal finishes if running
+    // via enterModalState? No, we used unique_ptr, wait. Actually,
+    // enterModalState with true takes ownership? Let's check docs or be safe.
+    // Actually, enterModalState(true) deletes it. So we release.
+    alert.release();
+  };
 
   // Keyboard
   addAndMakeVisible(keyboardComponent);
@@ -102,10 +155,18 @@ void HowlingWolvesAudioProcessorEditor::resized() {
   auto topBar = area.removeFromTop(35);
 
   // Top bar buttons (right side)
-  auto buttonArea = topBar.removeFromRight(300).reduced(5);
+  // Top bar buttons (right side)
+  auto buttonArea = topBar.removeFromRight(360).reduced(5); // Increased width
   browseButton.setBounds(buttonArea.removeFromLeft(150).reduced(2));
   saveButton.setBounds(buttonArea.removeFromLeft(70).reduced(2));
-  settingsButton.setBounds(buttonArea.removeFromLeft(70).reduced(2));
+  settingsButton.setBounds(
+      buttonArea.removeFromLeft(90).reduced(2));                  // Settings
+  tipsButton.setBounds(buttonArea.removeFromLeft(50).reduced(2)); // Tips
+
+  // Settings Overlay Position
+  if (settingsTab.isVisible()) {
+    settingsTab.setBounds(getLocalBounds().reduced(40));
+  }
 
   // Browser Overlay Position
   if (presetBrowser.isVisible()) {

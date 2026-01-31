@@ -14,8 +14,7 @@ public:
 
   PresetManager(juce::AudioProcessorValueTreeState &, SampleManager &);
 
-  void savePreset(const juce::String &presetName,
-                  const juce::String &category = "All");
+  void savePreset(const juce::String &presetName);
   void deletePreset(const juce::String &presetName);
   void loadPreset(const juce::String &presetName);
   int loadNextPreset();

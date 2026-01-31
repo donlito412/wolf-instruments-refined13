@@ -175,3 +175,40 @@ void ModernCyberLookAndFeel::drawRotarySlider(
   g.setColour(WolfColors::TEXT_PRIMARY);
   g.fillPath(pointerPath);
 }
+
+//==============================================================================
+juce::Rectangle<int>
+ModernCyberLookAndFeel::getTooltipBounds(const juce::String &tipText,
+                                         juce::Point<int> screenPos,
+                                         juce::Rectangle<int> parentArea) {
+  juce::TextLayout layout;
+  layout.createLayoutWithBalancedLineLengths(juce::AttributedString(tipText),
+                                             200.0f); // Max width 200px
+
+  auto width = (int)layout.getWidth() + 20; // Padding
+  auto height = (int)layout.getHeight() + 10;
+
+  return juce::Rectangle<int>(screenPos.x, screenPos.y + 24, width, height)
+      .constrainedWithin(parentArea);
+}
+
+void ModernCyberLookAndFeel::drawTooltip(juce::Graphics &g,
+                                         const juce::String &text, int width,
+                                         int height) {
+  auto bounds = juce::Rectangle<float>(width, height);
+
+  // Background (Dark Glass)
+  g.setColour(WolfColors::PANEL_DARKER);
+  g.fillRoundedRectangle(bounds, 4.0f);
+
+  // Border (Cyan Glow)
+  g.setColour(WolfColors::ACCENT_CYAN.withAlpha(0.6f));
+  g.drawRoundedRectangle(bounds, 4.0f, 1.0f);
+
+  // Text
+  g.setColour(WolfColors::TEXT_PRIMARY);
+  g.setFont(
+      juce::FontOptions(14.0f)); // Use FontOptions to fix deprecation warning
+  g.drawFittedText(text, bounds.reduced(5).toNearestInt(),
+                   juce::Justification::centred, 3); // Allow up to 3 lines
+}

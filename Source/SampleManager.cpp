@@ -23,6 +23,8 @@ void SampleManager::loadSound(const juce::File &file) {
   if (!file.existsAsFile())
     return;
 
+  currentSamplePath = file.getFullPathName();
+
   // Clear current sounds first so we don't play the old one if this load fails
   synthEngine.clearSounds();
 
@@ -195,4 +197,8 @@ void SampleManager::loadDrumKit(const juce::File &kitDirectory) {
       count++;
     }
   }
+}
+
+juce::String SampleManager::getCurrentSamplePath() const {
+  return currentSamplePath;
 }
